@@ -1,0 +1,340 @@
+/*
+ * Default stylesheet of the navigation drawer, returned by NavigationDrawer#getUserAgentStylesheet().
+ *
+ * Everything is expressed through the looked-up colours below. To fit the drawer into an application's own
+ * palette, redefine those on any ancestor - there is no need to copy or override a single rule:
+ *
+ *     .root {
+ *         -fx-navidraw-background: #1b2a41;
+ *         -fx-navidraw-selected-background: #24405f;
+ *     }
+ *
+ * For a ready-made dark palette add navidraw-dark.css to the scene instead.
+ */
+
+.navigation-drawer,
+.navigation-drawer-pane,
+.navigation-flyout,
+.drawer-toggle {
+
+    /* Surface of the drawer itself. */
+    -fx-navidraw-background: #ffffff;
+
+    /* Hairlines: between footer and items, and the separator item. */
+    -fx-navidraw-border: #e2e5ea;
+
+    /* Item label and section caption. */
+    -fx-navidraw-text: #1f2328;
+    -fx-navidraw-muted-text: #6b7280;
+
+    /* Icons, including the bars and chevron of the toggle button. */
+    -fx-navidraw-icon: #4b5563;
+
+    /* Item under the pointer. */
+    -fx-navidraw-hover: #eef1f6;
+
+    /* The selected item: fill, the bar at its leading edge, and its label and icon. */
+    -fx-navidraw-selected-background: #e4ecfb;
+    -fx-navidraw-selected-indicator: #2563eb;
+    -fx-navidraw-selected-text: #1d4ed8;
+
+    /* Badge at the trailing edge of an item. */
+    -fx-navidraw-badge-background: #2563eb;
+    -fx-navidraw-badge-text: #ffffff;
+
+    /* Dims the content behind an open modal drawer. */
+    -fx-navidraw-scrim: rgba(0, 0, 0, 0.45);
+
+}
+
+/* --------------------------------------------------------------------------------------------------
+ * Drawer
+ * -------------------------------------------------------------------------------------------------- */
+
+.navigation-drawer {
+    -fx-background-color: -fx-navidraw-background;
+}
+
+.navigation-drawer > .drawer-body {
+    -fx-background-color: transparent;
+}
+
+.navigation-drawer .header {
+    -fx-padding: 12 16 12 16;
+}
+
+/* The header node belongs to the application, but leaving its labels at the platform's default text colour
+   would make them invisible on a dark drawer. An application that styles its own header wins anyway - its
+   rules are author origin, this one is user agent origin. */
+.navigation-drawer .header .label {
+    -fx-text-fill: -fx-navidraw-text;
+}
+
+.navigation-drawer .items {
+    -fx-padding: 8 8 8 0;
+    -fx-spacing: 2;
+}
+
+.navigation-drawer .footer {
+    -fx-padding: 8 8 8 0;
+    -fx-spacing: 2;
+    -fx-border-color: -fx-navidraw-border;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* The scroll pane must not paint a surface of its own over the drawer background. */
+.navigation-drawer .items-scroll,
+.navigation-drawer .items-scroll > .viewport {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.navigation-drawer .items-scroll {
+    -fx-background-insets: 0;
+}
+
+/* A modal drawer floats above the content and says so with a shadow. */
+.navigation-drawer-pane:modal .navigation-drawer {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 18, 0, 2, 0);
+}
+
+/* --------------------------------------------------------------------------------------------------
+ * Items
+ * -------------------------------------------------------------------------------------------------- */
+
+.navigation-item {
+    /* The 3px leading border is always there, transparent until selected, so nothing shifts when the
+       selection moves. The left padding is reduced by the same amount to compensate. */
+    -fx-padding: 9 16 9 13;
+    -fx-spacing: 12;
+    -fx-background-color: transparent;
+    -fx-background-radius: 0 24 24 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 0 3;
+    -fx-cursor: hand;
+}
+
+.navigation-item:hover {
+    -fx-background-color: -fx-navidraw-hover;
+}
+
+.navigation-item:focused {
+    -fx-background-color: -fx-navidraw-hover;
+    -fx-border-color: -fx-navidraw-selected-indicator;
+}
+
+.navigation-item:selected {
+    -fx-background-color: -fx-navidraw-selected-background;
+    -fx-border-color: -fx-navidraw-selected-indicator;
+}
+
+.navigation-item:disabled {
+    -fx-opacity: 0.4;
+    -fx-cursor: default;
+}
+
+.navigation-item > .icon {
+    -fx-min-width: 24;
+    -fx-min-height: 24;
+    -fx-alignment: center;
+}
+
+.navigation-item .ikonli-font-icon {
+    -fx-icon-color: -fx-navidraw-icon;
+    -fx-icon-size: 20;
+}
+
+.navigation-item > .label {
+    -fx-text-fill: -fx-navidraw-text;
+}
+
+.navigation-item:selected > .label {
+    -fx-text-fill: -fx-navidraw-selected-text;
+}
+
+.navigation-item:selected .ikonli-font-icon {
+    -fx-icon-color: -fx-navidraw-selected-text;
+}
+
+.navigation-item > .badge {
+    -fx-background-color: -fx-navidraw-badge-background;
+    -fx-text-fill: -fx-navidraw-badge-text;
+    -fx-background-radius: 10;
+    -fx-padding: 1 7 1 7;
+    -fx-font-size: 11px;
+}
+
+/* The caption of a section. A row rather than a plain label, because a collapsible section puts a twisty at
+   its trailing edge - so the text styling lives on the label inside it. */
+.navigation-section-header {
+    -fx-padding: 16 16 6 16;
+    -fx-spacing: 8;
+}
+
+.navigation-section-header > .label {
+    -fx-text-fill: -fx-navidraw-muted-text;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* Only a section that actually folds behaves like something you can press. */
+.navigation-section-header:collapsible {
+    -fx-cursor: hand;
+}
+
+.navigation-section-header:collapsible:hover > .label,
+.navigation-section-header:collapsible:focused > .label {
+    -fx-text-fill: -fx-navidraw-text;
+}
+
+.navigation-section-header:collapsible:hover > .twisty,
+.navigation-section-header:collapsible:focused > .twisty {
+    -fx-background-color: -fx-navidraw-text;
+}
+
+.navigation-section-header > .twisty {
+    -fx-background-color: -fx-navidraw-muted-text;
+}
+
+.navigation-section > .section-items {
+    -fx-spacing: 2;
+}
+
+/* Height 9 with 4px insets top and bottom paints a 1px rule with air around it - a plain 1px region
+   would sit flush against the neighbouring items. */
+.navigation-separator {
+    -fx-min-height: 9;
+    -fx-pref-height: 9;
+    -fx-max-height: 9;
+    -fx-background-color: -fx-navidraw-border;
+    -fx-background-insets: 4 12 4 12;
+}
+
+/* --------------------------------------------------------------------------------------------------
+ * Groups (sub menus)
+ * -------------------------------------------------------------------------------------------------- */
+
+.navigation-group {
+    -fx-spacing: 2;
+}
+
+/* Rotated to -90 degrees while the group is closed. A rotation is a render transform, so the layout
+   keeps reserving the same 12 by 8 box either way and nothing shifts as it turns. */
+.navigation-item > .twisty,
+.navigation-section-header > .twisty {
+    -fx-pref-width: 12;
+    -fx-pref-height: 8;
+    -fx-background-color: -fx-navidraw-icon;
+    -fx-shape: "M 0 1.5 L 1.5 0 L 6 4.5 L 10.5 0 L 12 1.5 L 6 7.5 Z";
+    -fx-scale-shape: false;
+}
+
+/* A closed group still says that the page you are on lives inside it. */
+.navigation-item:contains-selected > .label {
+    -fx-text-fill: -fx-navidraw-selected-text;
+}
+
+.navigation-item:contains-selected .ikonli-font-icon {
+    -fx-icon-color: -fx-navidraw-selected-text;
+}
+
+.navigation-item:contains-selected > .twisty {
+    -fx-background-color: -fx-navidraw-selected-text;
+}
+
+/* In the mini size the children are not there to show the selection, so the group carries the marker. */
+.navigation-drawer:collapsed .navigation-item:contains-selected {
+    -fx-border-color: -fx-navidraw-selected-indicator;
+}
+
+.navigation-group > .group-items {
+    -fx-spacing: 2;
+    -fx-padding: 2 0 2 0;
+}
+
+/* Indented by 28 pixels against the 13 of a top level row. */
+.group-items > .navigation-item {
+    -fx-padding: 7 16 7 41;
+}
+
+.group-items > .navigation-item > .icon {
+    -fx-min-width: 20;
+    -fx-min-height: 20;
+}
+
+.group-items .ikonli-font-icon {
+    -fx-icon-size: 17;
+}
+
+/* --------------------------------------------------------------------------------------------------
+ * Flyout - the children of a group while the drawer is in the mini size
+ * -------------------------------------------------------------------------------------------------- */
+
+.navigation-flyout {
+    -fx-background-color: -fx-navidraw-background;
+    -fx-background-radius: 8;
+    -fx-border-color: -fx-navidraw-border;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 6 6 6 0;
+    -fx-spacing: 2;
+    -fx-min-width: 200;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.30), 14, 0, 2, 2);
+}
+
+.navigation-flyout > .caption {
+    -fx-padding: 4 16 6 16;
+    -fx-text-fill: -fx-navidraw-muted-text;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.navigation-flyout > .navigation-item {
+    -fx-padding: 8 16 8 13;
+}
+
+/* --------------------------------------------------------------------------------------------------
+ * Scrim and toggle button
+ * -------------------------------------------------------------------------------------------------- */
+
+.drawer-scrim {
+    -fx-background-color: -fx-navidraw-scrim;
+}
+
+.drawer-toggle {
+    -fx-background-color: transparent;
+    -fx-background-radius: 20;
+    -fx-padding: 9;
+    -fx-cursor: hand;
+}
+
+.drawer-toggle:hover {
+    -fx-background-color: -fx-navidraw-hover;
+}
+
+.drawer-toggle .toggle-graphic {
+    -fx-min-width: 18;
+    -fx-min-height: 16;
+    -fx-alignment: center;
+}
+
+.drawer-toggle .bars {
+    -fx-spacing: 4;
+}
+
+.drawer-toggle .bar {
+    -fx-pref-width: 18;
+    -fx-min-height: 2;
+    -fx-pref-height: 2;
+    -fx-max-height: 2;
+    -fx-background-color: -fx-navidraw-icon;
+    -fx-background-radius: 1;
+}
+
+.drawer-toggle .chevron {
+    -fx-pref-width: 10;
+    -fx-pref-height: 16;
+    -fx-background-color: -fx-navidraw-icon;
+    -fx-shape: "M 8 0 L 10 2 L 4 8 L 10 14 L 8 16 L 0 8 Z";
+    -fx-scale-shape: false;
+}

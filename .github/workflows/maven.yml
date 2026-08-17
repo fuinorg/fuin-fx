@@ -1,0 +1,83 @@
+name: Java Maven Build
+
+on:
+  push:
+    branches:
+      - '**'
+    paths-ignore:
+      - '*.md'
+      - '**/*.md'
+  pull_request:
+    branches:
+      - '**'
+    paths-ignore:
+      - '*.md'
+      - '**/*.md'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    # A JavaFX test that never returns from the toolkit would otherwise keep the runner busy until
+    # GitHub's 6 hour default limit and produce no usable log.
+    timeout-minutes: 30
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0
+
+    - name: Set up JDK
+      uses: actions/setup-java@v5
+      with:
+        java-version: '25'
+        distribution: 'zulu'
+        cache: maven
+
+    - name: Show versions
+      run: java -version && ./mvnw -version && gpg --version
+
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v5
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+
+    - name: Cache Maven packages
+      uses: actions/cache@v5
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    # Pinned to a commit rather than to the "v7" tag: this step is handed the signing key, and a tag can be
+    # moved to point at anything at any time. The actions/* steps above are exempt because GitHub owns them.
+    # The trailing comment is what Dependabot reads to offer an upgrade.
+    - name: Import GPG key
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+      uses: crazy-max/ghaction-import-gpg@2dc316deee8e90f13e1a351ab510b4d5bc0c82cd # v7.0.0
+      with:
+        gpg_private_key: ${{ secrets.OSS_SONATYPE_GPG_PRIVATE_KEY }}
+        passphrase: ${{ secrets.OSS_SONATYPE_GPG_PASSPHRASE }}
+
+    # No X server is set up on purpose: the tests run against JavaFX 26's own headless Glass, which the
+    # navidraw module selects with "glass.platform=Headless" in its surefire configuration.
+    - name: Build and verify with Maven
+      if: github.event_name != 'push' || (github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: ./mvnw clean verify -U -B --file pom.xml -s settings.xml
+
+    - name: Build and deploy with Maven
+      if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        OSS_SONATYPE_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
+        OSS_SONATYPE_TOKEN: ${{ secrets.OSS_SONATYPE_TOKEN }}
+        OSS_SONATYPE_GPG_PASSPHRASE: ${{ secrets.OSS_SONATYPE_GPG_PASSPHRASE }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: ./mvnw clean deploy jacoco:report sonar:sonar -Pcentral-sonatype-release -U -B --file pom.xml -s settings.xml

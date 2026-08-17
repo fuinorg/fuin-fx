@@ -1,0 +1,35 @@
+/*
+ * Dark palette for the navigation drawer.
+ *
+ * Add it to the scene, on top of the default stylesheet the drawer brings itself:
+ *
+ *     scene.getStylesheets().add(NavigationDrawer.darkStylesheet());
+ *
+ * It redefines the looked-up colours and nothing else, so every rule in navidraw.css keeps working.
+ */
+
+.navigation-drawer,
+.navigation-drawer-pane,
+.navigation-flyout,
+.drawer-toggle {
+
+    -fx-navidraw-background: #171b21;
+    -fx-navidraw-border: #2b313a;
+
+    -fx-navidraw-text: #e6e9ee;
+    -fx-navidraw-muted-text: #9aa4b2;
+
+    -fx-navidraw-icon: #aab2bf;
+
+    -fx-navidraw-hover: #222933;
+
+    -fx-navidraw-selected-background: #1e2f4d;
+    -fx-navidraw-selected-indicator: #60a5fa;
+    -fx-navidraw-selected-text: #93c5fd;
+
+    -fx-navidraw-badge-background: #3b82f6;
+    -fx-navidraw-badge-text: #0b1220;
+
+    -fx-navidraw-scrim: rgba(0, 0, 0, 0.6);
+
+}
